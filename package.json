@@ -1,0 +1,21 @@
+{
+  "name": "social-credit-bot",
+  "version": "1.0.0",
+  "description": "A simple social credit bot for James' server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "michel routh",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.6.0",
+    "mongoose-sequence": "^6.0.1",
+    "parse-ms-2": "^1.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.9.1"
+  }
+}
