@@ -76,8 +76,8 @@ module.exports = {
                         .setLabel('Warn (-5)')
                         .setStyle(ButtonStyle.Danger),
                     new ButtonBuilder()
-                        .setCustomId(`severe_${reportedUser}_${reportingUser}`)
-                        .setLabel('Severe (-15)')
+                        .setCustomId(`punish_${reportedUser}_${reportingUser}`)
+                        .setLabel('Punish (-15)')
                         .setStyle(ButtonStyle.Danger),
                     new ButtonBuilder()
                         .setCustomId(`falsereport_${reportedUser}_${reportingUser}`)
