@@ -1,0 +1,15 @@
+runtime: nodejs20 # Specify the Node.js runtime version
+
+instance_class: F1 # Specify the instance class (F1 is the smallest, you can choose based on your needs)
+
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  min_instances: 1
+  max_instances: 2
+
+handlers:
+  - url: /.*
+    script: auto
+
+# Optional: If you need to specify a specific entry point or command to run
+entrypoint: npm start

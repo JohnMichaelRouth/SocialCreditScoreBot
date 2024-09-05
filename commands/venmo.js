@@ -4,7 +4,7 @@ const profileModel = require("../models/profileSchema.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("venmo")
-        .setDescription("Send money to another user")
+        .setDescription("Send leobux to another user")
         .addUserOption((option) =>
             option
                 .setName("user")
@@ -14,7 +14,7 @@ module.exports = {
         .addIntegerOption((option) =>
             option
                 .setName("amount")
-                .setDescription("the amount of money you want to send them")
+                .setDescription("the amount of leobux you want to send them")
                 .setRequired(true)
                 .setMinValue(1)
             ),

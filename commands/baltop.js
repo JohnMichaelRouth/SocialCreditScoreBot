@@ -24,7 +24,7 @@ module.exports = {
 
         const memberIndex = members.findIndex(member => member.userId === id);
 
-        baltopEmbed.setFooter({text: `You are rank #${memberIndex + 1} with a balance of ${balance}`});
+        baltopEmbed.setFooter({text: `You are rank #${memberIndex + 1} with a balance of ${balance} leobux`});
 
         const topTen = members.slice(0,10);
 

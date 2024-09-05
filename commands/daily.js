@@ -6,7 +6,7 @@ const { dailyMin, dailyMax } = require("../globalValues.json");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("daily")
-        .setDescription("Redeem free social credits for your income"),
+        .setDescription("Redeem your daily leobux"),
     async execute(interaction, profileData) {
         const { dailyLastUsed, socialCreditScore } = profileData;
 
@@ -48,6 +48,6 @@ module.exports = {
             return;
         }
 
-        await interaction.editReply(`You redeemed ${randomAmt} social credits and your social credit score increased by ${creditScoreIncrement} points!`);
+        await interaction.editReply(`You redeemed ${randomAmt} leobux and your social credit score increased by ${creditScoreIncrement} points!`);
     }
 };
