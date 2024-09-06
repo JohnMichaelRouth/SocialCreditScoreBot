@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { Client, GatewayIntentBits, Collection } = require("discord.js");
+const { Client, GatewayIntentBits, Collection, Partials} = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
 const mongoose = require("mongoose")
@@ -13,7 +13,12 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions,
-    ]
+    ],
+    partials: [
+        Partials.Message,
+        Partials.Reaction,
+        Partials.User,
+    ],
 });
 
 process.on('unhandledRejection', error => {
