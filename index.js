@@ -1,8 +1,10 @@
+// index.js
+
 require("dotenv").config();
-const { Client, GatewayIntentBits, Collection, Partials} = require("discord.js");
+const { Client, GatewayIntentBits, Collection, Partials } = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const { DISCORD_TOKEN: token, MONGODB_SRV: database } = process.env;
 
@@ -20,6 +22,9 @@ const client = new Client({
         Partials.User,
     ],
 });
+
+// Initialize gameSessions Map to track each user's session
+client.gameSessions = new Map();
 
 process.on('unhandledRejection', error => {
     console.error('Unhandled promise rejection:', error);
@@ -45,11 +50,11 @@ for (const file of eventFiles) {
 
 // Load command files on startup
 client.commands = new Collection();
-const commandsPath = path.join(__dirname, "commands"); // Fixed path
-const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".js")); // Fixed path and variable name
+const commandsPath = path.join(__dirname, "commands");
+const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".js"));
 
 for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file); // Fixed path and variable name
+    const filePath = path.join(commandsPath, file);
     const command = require(filePath);
     if ("data" in command && "execute" in command) {
         client.commands.set(command.data.name, command);
@@ -58,8 +63,7 @@ for (const file of commandFiles) {
     }
 }
 
-mongoose.connect(database, {
-}).then(() => {
+mongoose.connect(database, {}).then(() => {
     console.log("Connected to MongoDB!");
 }).catch((err) => {
     console.log(err);

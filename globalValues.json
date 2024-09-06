@@ -1,4 +1,11 @@
 {
     "dailyMin": 1,
-    "dailyMax": 10
+    "dailyMax": 10,
+    "dirtWorkAttempts": 8,
+    "dirtLeobuxRewardMax": 7,
+    "dirtLeobuxRewardMin": 2,
+    "dirtRows": 3,
+    "dirtColumns": 5,
+    "dirtWormCount": 2,
+    "dirtRandomWorms": 2
 }
