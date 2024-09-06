@@ -12,8 +12,7 @@ module.exports = {
 
         const role = interaction.guild.roles.cache.find(role => role.name === "authoritarian");
 
-        if((action === 'accept' || action === 'decline')) // dont handle the duel commands
-        {
+        if(!(action.startsWith("praise") || action === "warn" || action === "punish" || action === "noaction" || action === "disapprove" || action === "falsecommend" || action === "falsereport" || action === "noaction")){
             return;
         }
 
