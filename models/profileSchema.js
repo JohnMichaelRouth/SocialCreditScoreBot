@@ -10,6 +10,12 @@ const statsSchema = new mongoose.Schema({
     wormsFound: { type: Number, default: 0 },
     leobuxWonGambling: { type: Number, default: 0 },
     leobuxLostGambling: { type: Number, default: 0 },
+    socialCreditGained: { type: Number, default: 0 },
+    socialCreditLost: { type: Number, default: 0 },
+    reportsMade: { type: Number, default: 0 },
+    commendsMade: { type: Number, default: 0 },
+    falseReports: { type: Number, default: 0 },
+    falseCommends: { type: Number, default: 0 },
 });
 
 const profileSchema = new mongoose.Schema({
