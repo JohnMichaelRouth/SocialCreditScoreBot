@@ -16,7 +16,6 @@ module.exports = {
             if (!interaction.replied) {
                 return interaction.reply({ content: "This isn't your job, stinky. Start a new one using /work dirt.", ephemeral: true });
             } else {
-                // Use followUp if interaction has already been acknowledged
                 return interaction.followUp({ content: "This isn't your job, stinky. Start a new one using /work dirt.", ephemeral: true });
             }
         }
@@ -25,16 +24,18 @@ module.exports = {
             if (!interaction.replied) {
                 return interaction.reply({ content: "This isn't your job, stinky. Start a new one using /work dirt.", ephemeral: true });
             } else {
-                // Use followUp if interaction has already been acknowledged
                 return interaction.followUp({ content: "This isn't your job, stinky. Start a new one using /work dirt.", ephemeral: true });
             }
         }
 
         const { grid, worms, attemptsLeft, foundWorms } = gameSession;
 
+        // Defer the reply immediately to ensure it's handled
+        await interaction.deferUpdate();
+
         // Check if the user already dug this spot
         if (grid[row][col] !== '🟫') {
-            return interaction.reply({ content: "You already dug this spot! Try another.", ephemeral: true });
+            return interaction.followUp({ content: "You already dug this spot! Try another.", ephemeral: true });
         }
 
         // Decrease attempts and check if a worm is found
@@ -48,6 +49,16 @@ module.exports = {
         if (worms.some(([wormRow, wormCol]) => wormRow === rowInt && wormCol === colInt)) {
             grid[row][col] = '🪱'; // Worm emoji if found
             updatedFoundWorms += 1;
+
+            // Update the user's worm stat
+            try {
+                await profileModel.findOneAndUpdate(
+                    { userId: interaction.user.id },
+                    { $inc: { "stats.wormsFound": 1 } }
+                );
+            } catch (error) {
+                console.error("Error updating wormsFound stat:", error);
+            }
         } else {
             grid[row][col] = '🕳'; // Hole emoji if no worm
         }
@@ -58,7 +69,7 @@ module.exports = {
 
         // Create the updated grid display
         const gridDisplay = grid.map(row => row.join('')).join('\n');
-        const embed = new EmbedBuilder()
+        let embed = new EmbedBuilder()
             .setTitle("Dirt Digging Job")
             .setDescription("Keep digging!")
             .setColor(0x8B4513)
@@ -66,28 +77,50 @@ module.exports = {
             .addFields({ name: 'Worms Found', value: `${updatedFoundWorms}/${globalValues.dirtWormCount}`, inline: true })
             .addFields({ name: 'Dirt Grid', value: gridDisplay });
 
-        await interaction.update({ embeds: [embed], components: interaction.message.components });
-
         // Check if the game is over
         if (updatedAttempts === 0 || updatedFoundWorms === globalValues.dirtWormCount) {
+            let finalMessage = "";  // To hold the message about worms in their pocket
+
             if (updatedFoundWorms === globalValues.dirtWormCount) {
-                const leoBuxReward = Math.floor( Math.random() * (globalValues.dirtLeobuxRewardMax - globalValues.dirtLeobuxRewardMin + 1) + globalValues.dirtLeobuxRewardMin )
-                embed.setDescription(`Congratulations! You found all the worms! You earned ${leoBuxReward} leobux.`);
-                // Award leobux to the user
+                // Player found all worms, reward them
+                const leoBuxReward = Math.floor( Math.random() * (globalValues.dirtLeobuxRewardMax - globalValues.dirtLeobuxRewardMin + 1) + globalValues.dirtLeobuxRewardMin );
+                finalMessage = `Congratulations! You found all the worms and stuffed them in your pocket! You earned ${leoBuxReward} leobux.`;
+
+                // Award leobux to the user and track money earned
                 try {
                     await profileModel.findOneAndUpdate(
                         { userId: interaction.user.id },
-                        { $inc: { balance: leoBuxReward } }
+                        {
+                            $inc: { balance: leoBuxReward, "stats.moneyEarnedFromJobs": leoBuxReward }  // Track money earned from jobs
+                        }
                     );
                 } catch (error) {
-                    console.error("Error updating balance:", error);
+                    console.error("Error updating balance and stats:", error);
                 }
             } else {
-                embed.setDescription("You're out of attempts! Better luck next time.");
+                // Player ran out of attempts, reveal the remaining worms
+                worms.forEach(([wormRow, wormCol]) => {
+                    if (grid[wormRow][wormCol] === '🟫') {
+                        grid[wormRow][wormCol] = '❌'; // Mark unfound worms with an X
+                    }
+                });
+
+                finalMessage = `You're out of attempts! You stuffed the worm in your pocket. Better luck next time!`;
             }
 
+            const finalGridDisplay = grid.map(row => row.join('')).join('\n');
+            embed = new EmbedBuilder()  // Create a new embed to avoid showing two grids
+                .setTitle("Dirt Digging Job - Game Over")
+                .setColor(0x8B4513)
+                .setDescription(finalMessage)
+                .addFields({ name: 'Final Grid', value: finalGridDisplay });
+
+            // Update the final state and remove buttons
             await interaction.editReply({ embeds: [embed], components: [] });
             client.gameSessions.delete(interaction.user.id);
+        } else {
+            // Update the ongoing game state
+            await interaction.editReply({ embeds: [embed], components: interaction.message.components });
         }
     },
 };
