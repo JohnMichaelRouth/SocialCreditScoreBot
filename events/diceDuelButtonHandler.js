@@ -1,6 +1,6 @@
 const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, Events } = require('discord.js');
 const profileModel = require('../models/profileSchema');
-const {CLIENT_ID: clientId} = process.env;
+const { CLIENT_ID: clientId } = process.env;
 
 // Dice emojis for rolling effect
 const diceEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣'];
@@ -102,9 +102,9 @@ async function handleDiceDuel(interaction, challengerId, opponentId, betAmount) 
         const o2 = rollDie();
         const o3 = rollDie();
         const challengerRolls = [c1, c2, c3];
-        const challengerEmojiRolls = [diceEmojis[c1-1], diceEmojis[c2-1], diceEmojis[c3-1]];
+        const challengerEmojiRolls = [diceEmojis[c1 - 1], diceEmojis[c2 - 1], diceEmojis[c3 - 1]];
         const opponentRolls = [o1, o2, o3];
-        const opponentEmojiRolls = [diceEmojis[o1-1], diceEmojis[o2-1], diceEmojis[o3-1]];
+        const opponentEmojiRolls = [diceEmojis[o1 - 1], diceEmojis[o2 - 1], diceEmojis[o3 - 1]];
 
         const challengerTotal = challengerRolls.reduce((a, b) => a + b, 0);
         const opponentTotal = opponentRolls.reduce((a, b) => a + b, 0);
@@ -115,21 +115,21 @@ async function handleDiceDuel(interaction, challengerId, opponentId, betAmount) 
         if (challengerTotal > opponentTotal) {
             await profileModel.findOneAndUpdate(
                 { userId: challengerId },
-                { $inc: { balance: bet } }
+                { $inc: { balance: bet, "stats.leobuxWonGambling": bet } }
             );
             await profileModel.findOneAndUpdate(
                 { userId: opponentId },
-                { $inc: { balance: -bet } }
+                { $inc: { balance: -bet, "stats.leobuxLostGambling": bet } }
             );
             resultMessage = `<@${challengerId}> wins the duel and gains ${bet} leobux!`;
         } else if (challengerTotal < opponentTotal) {
             await profileModel.findOneAndUpdate(
                 { userId: challengerId },
-                { $inc: { balance: -bet } }
+                { $inc: { balance: -bet, "stats.leobuxLostGambling": bet } }
             );
             await profileModel.findOneAndUpdate(
                 { userId: opponentId },
-                { $inc: { balance: bet } }
+                { $inc: { balance: bet, "stats.leobuxWonGambling": bet } }
             );
             resultMessage = `<@${opponentId}> wins the duel and gains ${bet} leobux!`;
         } else {

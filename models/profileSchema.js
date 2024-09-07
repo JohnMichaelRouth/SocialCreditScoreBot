@@ -8,7 +8,8 @@ const roleSchema = new mongoose.Schema({
 const statsSchema = new mongoose.Schema({
     moneyEarnedFromJobs: { type: Number, default: 0 },
     wormsFound: { type: Number, default: 0 },
-    // You can add more stats here in the future
+    leobuxWonGambling: { type: Number, default: 0 },
+    leobuxLostGambling: { type: Number, default: 0 },
 });
 
 const profileSchema = new mongoose.Schema({
